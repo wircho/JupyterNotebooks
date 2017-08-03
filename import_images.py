@@ -1,5 +1,5 @@
 from tag_image_tools import Folder, Cat, all_categories, top, images, all_image_names
-import pickel
+import pickle
 
 NO = "NO"
 YES = "YES"
@@ -9,7 +9,7 @@ class Import:
 		self.cat = cat
 		self.val = val
 	def desc(self):
-		return self.cat + "." + self.val
+		return self.cat.name + "." + self.val
 
 imports = []
 done = False
@@ -32,9 +32,14 @@ def get_import():
 	while cat is None:
 		cat = get_cat("Enter a valid category (type \"finish!\" if you're done): ")
 		if done: return
+	val = YES if input("Import into YES or NO? ") is YES else NO
+	imports.append(Import(cat, val))
+
+print("All categories: " + str(list([cat.name for cat in all_categories])))
 
 while not done:
 	get_import()
+
 
 info_path = input("Image info path (no .pkl): ") + ".pkl"
 info = pickle.load(open(info_path, "rb"))
@@ -50,7 +55,8 @@ names = info["names"]
 labels = info["labels"]
 selected_names = []
 for i in range(0, len(names)):
-	if labels[i] == selected_label: selected_names.append(names[i])
+	# print("Comparing label " + label_names[labels[i]] + " to " + selected_label)
+	if label_names[labels[i]] == selected_label: selected_names.append(names[i])
 
 print("Gathered " + str(len(selected_names)) + " image names.")
 

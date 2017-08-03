@@ -44,8 +44,8 @@ def have_file(folders, name):
         if has_file(folder, name): return True
     return false
 
-#base = "C:\\Users\\mrivas\\Desktop\\sensus_classification"
-base = "/Users/wircho/Desktop/classes"
+base = "\\\\ARODRIGUEZ\\SharedVMFolder\\sensus_classification"
+# base = "/Users/wircho/Desktop/classes"
 YES_ = "YES_"
 NO_ = "NO_"
 
