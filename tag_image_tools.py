@@ -44,7 +44,7 @@ def have_file(folders, name):
         if has_file(folder, name): return True
     return false
 
-base = "\\\\ARODRIGUEZ\\SharedVMFolder\\sensus_classification"
+base = "\\\\stelvio.net\\mtl\\Public\\sensus_classification"
 # base = "/Users/wircho/Desktop/classes"
 YES_ = "YES_"
 NO_ = "NO_"
