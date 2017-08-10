@@ -1,8 +1,9 @@
 from IPython.display import Image, display, clear_output, HTML
+import ipywidgets as widgets
 from tag_image_tools import Folder, Cat, all_categories, top, images, all_image_names
 from tag_images_social_widget import KeyWidget
 
-print("All categories: " + str(list([cat.name for cat in all_categories])))
+print("All categories: " + ", ".join(cat.name for cat in all_categories))
 
 def input_category(q):
     value = input(q)
@@ -10,9 +11,20 @@ def input_category(q):
         if cat.name == value: return cat
     return None
 
-selected_category = input_category("Enter a category: ")
+selected_category = input_category("Enter a category (case sensitive): ")
 while selected_category is None:
-    selected_category = input_category("Please enter a valid category: ")
+    selected_category = input_category("Please enter a valid category (case sensitive): ")
+
+clear_output()
+display(HTML("You have selected <b>" + selected_category.name + "</b>"))
+sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\f\samples_"
+display(HTML("Here are some examples of images in this category: <a target='_blank' href='file:" + sample_base + selected_category.name + "'>" + sample_base + selected_category.name + "</a>"))
+# display(HTML("Below are examples of images from all other categories:"))
+# for cat in all_categories:
+#     if cat.name == selected_category.name: continue
+#     display(HTML("<b>" + cat.name + ":</b> <a target='_blank' href='file:" + sample_base + cat.name + "'>" + sample_base + cat.name + "</a>"))
+display(HTML("Press the 'Begin Tagging!' button above to continue."))
+
 
 def image_should_show(image_name):
     if image_name in deleted_image_names: return True
@@ -147,4 +159,11 @@ display(HTML("<script src=\"tag_images_social_appearance.js\"></script>"))
 key_widget = KeyWidget()
 display(key_widget)
 key_widget.observe(handle_key, names=["current_key"])
-prepare_for_next_image()
+
+def pressed_btn(x):
+    btn.close()
+    prepare_for_next_image()
+
+btn = widgets.Button(description="Begin Tagging!", button_style="success")
+btn.on_click(pressed_btn)
+display(btn)
