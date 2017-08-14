@@ -101,7 +101,7 @@ def still_preparing():
     images.reserve(image_name)
     num_yes = selected_category.yes.count()
     num_no = selected_category.no.count()
-    display(HTML("<div style='font-size:28pt;'>Image " + str(i + 1) + "/" + str(num) + "&nbsp;&nbsp;&nbsp;<span style='color: grey;'>[<span style='color: green;'>" + str(num_yes) + "</span>,<span style='color: red;'>" + str(num_no) + "</span>]</span></div><br/>"))
+    display(HTML("<div style='font-size:28pt;'>Image " + str(i + 1) + "/" + str(num) + "&nbsp;&nbsp;&nbsp;<span style='color: grey;'>[<span style='color: green;'>" + str(num_yes) + "</span>]</span></div><br/>"))
     #display(HTML("<div>Current stats: " + str(num_yes) + " " + selected_category.name + "&nbsp;&nbsp;&nbsp;" + str(num_no) + " NOT " + selected_category.name + "</div>"))
     res = selected_category.result(image_name)
     if not(res is None): display(HTML("<div>Currently labeled as " + ("" if res is True else "NOT ") + selected_category.name + "</div><br/>"))
