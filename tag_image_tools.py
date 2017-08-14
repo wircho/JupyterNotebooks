@@ -125,7 +125,11 @@ class Folder:
         return reserved.has(name)
     def remove(self, name):
         file_path = join(self.path, name)
-        if isfile(file_path) and not isdir(file_path): os.remove(file_path)
+        if isfile(file_path) and not isdir(file_path):
+            try:
+                os.remove(file_path)
+            except:
+                pass
         #trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
         #self.move(name, trash, True)
     def move(self, name, other, rename):
@@ -137,14 +141,20 @@ class Folder:
         while isfile(dst):
             if not rename: return
             dst = next_file_path(dst)
-        shutil.move(src, dst)
+        try:
+            shutil.move(src, dst)
+        except:
+            pass
     def copy(self, name, other):
         other.ensure()
         src = self.slash(name)
         dst = other.slash(name)
         if isdir(src) or isdir(dst): exit()
         if not isfile(src) or isfile(dst): return
-        shutil.copyfile(src, dst)
+        try:
+            shutil.copyfile(src, dst)
+        except:
+            pass
             
     
 top = Folder(None)
