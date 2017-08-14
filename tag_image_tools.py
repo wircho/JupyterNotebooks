@@ -1,3 +1,4 @@
+import os
 from os import listdir, mkdir
 from os.path import isfile, isdir, join, splitext
 import shutil
@@ -117,13 +118,16 @@ class Folder:
     def unreserve(self, name):
         reserved = self.sub("reserved") if self.name is None else Folder("reserved", self.base)
         trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
-        reserved.move(name, trash, True)
+        #reserved.move(name, trash, True)
+        reserved.remove(name)
     def is_reserved(self, name):
         reserved = self.sub("reserved") if self.name is None else Folder("reserved", self.base)
         return reserved.has(name)
     def remove(self, name):
-        trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
-        self.move(name, trash, True)
+        file_path = join(self.path, name)
+        if isfile(file_path) and not isdir(file_path): os.remove(file_path)
+        #trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
+        #self.move(name, trash, True)
     def move(self, name, other, rename):
         other.ensure()
         src = self.slash(name)
