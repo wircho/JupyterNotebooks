@@ -1,6 +1,7 @@
 from os import listdir, mkdir
-from os.path import isfile, isdir, join
+from os.path import isfile, isdir, join, splitext
 import shutil
+import re
 
 def multijoin(xs, ys):
     if isinstance(xs, list):
@@ -17,6 +18,9 @@ def get_file_names(folder, f = None):
 
 def get_file_paths(folder, f = None):
     return multijoin(folder, get_file_names(folder))
+
+def get_file_count(folder):
+    return len(listdir(folder))
 
 def get_image_names(folder):
     return get_file_names(folder, lambda name: name.endswith(".jpg") or name.endswith(".png") or name.endswith(".JPG") or name.endswith(".PNG"))
@@ -43,6 +47,16 @@ def have_file(folders, name):
     for folder in folders:
         if has_file(folder, name): return True
     return false
+
+file_number_re = re.compile("^(.+) \\(([0-9]+)\\)$")
+def next_file_path(path):
+    actual_path, extension = splitext(path)
+    file_number_match = file_number_re.match(actual_path)
+    if not file_number_match:
+        return actual_path + " (1)." + extension
+    return file_number_match.group(0) + " (" + (int(file_number_match.group(1)) + 1) + ")." + extension
+
+
 
 base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_classification"
 # base = "/Users/wircho/Desktop/classes"
@@ -74,6 +88,9 @@ class Folder:
     def file_paths(self, f = None):
         self.ensure()
         return get_file_paths(self.path, f)
+    def count(self):
+        self.ensure()
+        return get_file_count(self.path)
     def image_names(self):
         self.ensure()
         return get_image_names(self.path)
@@ -94,17 +111,29 @@ class Folder:
         return self.sub(YES_ + cat.name)
     def no(self, cat):
         return self.sub(NO_ + cat.name)
+    def reserve(self, name):
+        reserved = self.sub("reserved") if self.name is None else Folder("reserved", self.base)
+        self.copy(name, reserved)
+    def unreserve(self, name):
+        reserved = self.sub("reserved") if self.name is None else Folder("reserved", self.base)
+        trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
+        reserved.move(name, trash, True)
+    def is_reserved(self, name):
+        reserved = self.sub("reserved") if self.name is None else Folder("reserved", self.base)
+        return reserved.has(name)
     def remove(self, name):
         trash = self.sub("trash") if self.name is None else Folder("trash", self.base)
-        self.move(name, trash)
-    def move(self, name, other):
+        self.move(name, trash, True)
+    def move(self, name, other, rename):
         other.ensure()
         src = self.slash(name)
         dst = other.slash(name)
         if isdir(src) or isdir(dst): exit()
-        if not isfile(src) or isfile(dst): return
+        if not isfile(src): return
+        while isfile(dst):
+            if not rename: return
+            dst = next_file_path(dst)
         shutil.move(src, dst)
-            
     def copy(self, name, other):
         other.ensure()
         src = self.slash(name)
@@ -123,8 +152,8 @@ class Cat:
         self.name = name
         self.yes = Folder(YES_ + name)
         self.no = Folder(NO_ + name)
-        self.num_yes = len(self.yes.image_names())
-        self.num_no = len(self.no.image_names())
+        # self.num_yes = len(self.yes.image_names())
+        # self.num_no = len(self.no.image_names())
     def result(self, name):
         other_yeses = [folder for folder in top.yeses() if folder.name != self.yes.name]
         if self.yes.has(name): return True

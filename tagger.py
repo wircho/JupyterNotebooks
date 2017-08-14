@@ -29,6 +29,7 @@ display(HTML("Press the 'Begin Tagging!' button above to continue."))
 def image_should_show(image_name):
     if image_name in deleted_image_names: return True
     if selected_category.no.has(image_name) or selected_category.yes.has(image_name): return False
+    if images.is_reserved(image_name): return False
     for cat in all_categories:
         if cat.name == selected_category.name: continue
         if cat.yes.has(image_name): return False
@@ -42,8 +43,8 @@ def image_set(image_name, value):
         selected_category.yes.remove(image_name)
         images.copy(image_name, selected_category.no)
         
-num_yes = selected_category.num_yes
-num_no = selected_category.num_no
+#num_yes = selected_category.num_yes
+#num_no = selected_category.num_no
 num = len(all_image_names)
 
 tag_map = {
@@ -97,6 +98,9 @@ def still_preparing():
         i += 1
         return True
     clear_output()
+    images.reserve(image_name)
+    num_yes = selected_category.yes.count()
+    num_no = selected_category.no.count()
     display(HTML("<div style='font-size:28pt;'>Image " + str(i + 1) + "/" + str(num) + "&nbsp;&nbsp;&nbsp;<span style='color: grey;'>[<span style='color: green;'>" + str(num_yes) + "</span>,<span style='color: red;'>" + str(num_no) + "</span>]</span></div><br/>"))
     #display(HTML("<div>Current stats: " + str(num_yes) + " " + selected_category.name + "&nbsp;&nbsp;&nbsp;" + str(num_no) + " NOT " + selected_category.name + "</div>"))
     res = selected_category.result(image_name)
@@ -113,8 +117,9 @@ def still_preparing():
     return False
 
 def should_continue(tag_input):
-    global i, warning, message, num, num_yes, num_no
+    global i, warning, message, num #, num_yes, num_no
     image_name = all_image_names[i]
+    images.unreserve(image_name)
     if tag_input.isBack():
         if i <= 0:
             warning = "You're at the first image."
@@ -140,10 +145,10 @@ def should_continue(tag_input):
     elif not(tag_input.tag is None):
         if image_name in deleted_image_names: del deleted_image_names[image_name]
         res = selected_category.result(image_name)
-        if res is True: num_yes -= 1
-        if res is False: num_no -= 1
-        if tag_input.tag is True: num_yes += 1
-        if tag_input.tag is False: num_no += 1
+        if res is True: pass #num_yes -= 1
+        if res is False: pass #num_no -= 1
+        if tag_input.tag is True: pass #num_yes += 1
+        if tag_input.tag is False: pass #num_no += 1
         image_set(image_name, tag_input.tag)
         if i >= num - 1:
             clear_output()
@@ -161,6 +166,8 @@ display(key_widget)
 key_widget.observe(handle_key, names=["current_key"])
 
 def pressed_btn(x):
+    clear_output()
+    print("Please wait. Things are currently happening in places...")
     btn.close()
     prepare_for_next_image()
 
