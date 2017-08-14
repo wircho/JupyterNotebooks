@@ -3,7 +3,9 @@ import ipywidgets as widgets
 from tag_image_tools import Folder, Cat, all_categories, top, images, all_image_names
 from tag_images_social_widget import KeyWidget
 
-print("All categories: " + ", ".join(cat.name for cat in all_categories))
+counts = sorted([{"name": cat.name, "count": cat.yes.count()} for cat in all_categories], key = lambda x: x["count"])
+
+print("All categories: " + ", ".join(x["name"] + " (" + str(x["count"]) + ")"  for x in counts))
 
 def input_category(q):
     value = input(q)
@@ -17,7 +19,7 @@ while selected_category is None:
 
 clear_output()
 display(HTML("You have selected <b>" + selected_category.name + "</b>"))
-sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\f\samples_"
+sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\\samples_"
 display(HTML("Here are some examples of images in this category: <a target='_blank' href='file:" + sample_base + selected_category.name + "'>" + sample_base + selected_category.name + "</a>"))
 # display(HTML("Below are examples of images from all other categories:"))
 # for cat in all_categories:
@@ -56,9 +58,9 @@ class TagInput:
     def __init__(self, key):
         self.key = key
         self.tag = tag_map[key] if (key in tag_map) else None
-        self._isBack = key == "ArrowLeft"
-        self._isForward = key == "ArrowRight"
-        self._isExit = key == "Escape"
+        self._isBack = key == "ArrowLeft" or key == "Left"
+        self._isForward = key == "ArrowRight" or key == "Right"
+        self._isExit = key == "Escape" or key == "Esc"
     def isBack(self):
         return self._isBack
     def isForward(self):
