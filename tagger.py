@@ -68,8 +68,81 @@ class TagInput:
     def isExit(self):
         return self._isExit
 
+class ImageIndex:
+    def __init__(self):
+        self.i = 0
+        self.history = []
+        self.history_index = None
+    def in_history(self):
+        return not(self.history_index is None)
+    def skip(self):
+        self.i += 1
+    def copy(self):
+        other = ImageIndex()
+        other.i = self.i
+        other.history = [i for i in self.history]
+        other.history_index = self.history_index
+        return other
+    def prev_i(self):
+        other = self.copy()
+        other.back()
+        return other.i
+    def next_i(self, skip = False):
+        other = self.copy()
+        other.forward(skip)
+        return other.i
+    def forward(self, skip = False):
+        history_num = len(self.history)
+        if history_num == 0:
+            if not skip: self.history = [self.i]
+            self.i += 1
+            return
+        if self.history_index is None:
+            history_first = self.history[0]
+            if self.i < history_first:
+                self.i = history_first
+                self.history_index = 0
+                return
+            history_last = self.history[history_num - 1]
+            if self.i > history_last:
+                if not skip: self.history.append(self.i)
+                self.i += 1
+                return
+            return
+        if self.history_index == history_num - 1:
+            self.history_index = None
+            self.i += 1
+            return
+        self.history_index += 1
+        self.i = self.history[self.history_index]
+    def back(self):
+        history_num = len(self.history)
+        if history_num == 0:
+            self.history = [self.i]
+            self.i -= 1
+            return
+        if self.history_index is None:
+            history_last = self.history[history_num - 1]
+            if self.i > history_last:
+                self.i = history_last
+                self.history_index = history_num - 1
+                return
+            history_first = self.history[0]
+            if self.i < history_first:
+                self.history.insert(0, self.i)
+                self.i -= 1
+                return
+            return
+        if self.history_index == 0:
+            self.history_index = None
+            self.i -= 1
+            return
+        self.history_index -= 1
+        self.i = self.history[self.history_index]
+
+
 deleted_image_names = {}
-i = 0
+index = ImageIndex()
 warning = None
 message = None
 can_handle_tag_input = False
@@ -92,18 +165,20 @@ def handle_tag_input(tag_input):
     prepare_for_next_image()
     
 def still_preparing():
-    global i, warning, message
-    if i < 0: i = 0
-    if i >= num: i = num - 1
-    image_name = all_image_names[i]
-    if i < num - 1 and not image_should_show(image_name):
-        i += 1
+    global index, warning, message
+    if index.i < 0: index = ImageIndex()
+    if index.i >= num:
+        index = ImageIndex()
+        index.i = num - 1
+    image_name = all_image_names[index.i]
+    if index.i < num - 1 and not image_should_show(image_name):
+        index.forward(skip = True)
         return True
     clear_output()
     images.reserve(image_name)
     num_yes = selected_category.yes.count()
     num_no = selected_category.no.count()
-    display(HTML("<div style='font-size:28pt;'>Image " + str(i + 1) + "/" + str(num) + "&nbsp;&nbsp;&nbsp;<span style='color: grey;'>[<span style='color: green;'>" + str(num_yes) + "</span>]</span></div><br/>"))
+    display(HTML("<div style='font-size:28pt;'>Image " + str(index.i + 1) + "/" + str(num) + "&nbsp;&nbsp;&nbsp;<span style='color: grey;'>[<span style='color: green;'>" + str(num_yes) + "</span>]</span></div><br/>"))
     #display(HTML("<div>Current stats: " + str(num_yes) + " " + selected_category.name + "&nbsp;&nbsp;&nbsp;" + str(num_no) + " NOT " + selected_category.name + "</div>"))
     res = selected_category.result(image_name)
     if not(res is None): display(HTML("<div>Currently labeled as " + ("" if res is True else "NOT ") + selected_category.name + "</div><br/>"))
@@ -119,27 +194,28 @@ def still_preparing():
     return False
 
 def should_continue(tag_input):
-    global i, warning, message, num #, num_yes, num_no
-    image_name = all_image_names[i]
+    global index, warning, message, num #, num_yes, num_no
+    image_name = all_image_names[index.i]
     images.unreserve(image_name)
     if tag_input.isBack():
-        if i <= 0:
+        if index.i <= 0:
             warning = "You're at the first image."
             return True
-        prev_image_name = all_image_names[i - 1]
+        prev_i = index.prev_i()
+        prev_image_name = all_image_names[prev_i]
         if not image_should_show(image_name): deleted_image_names[image_name] = True
         if not image_should_show(prev_image_name): deleted_image_names[prev_image_name] = True
-        i -= 1
+        index.back()
     elif tag_input.isForward():
         if image_name in deleted_image_names: del deleted_image_names[image_name]
         if image_should_show(image_name):
             warning = "Please label this image first."
             return True
-        if i >= num - 1:
+        if index.i >= num - 1:
             clear_output()
             print("You're done! :) Bye!")
             return False
-        i += 1
+        index.forward()
     elif tag_input.isExit():
         clear_output()
         print("Ok! :) Bye!")
@@ -152,11 +228,11 @@ def should_continue(tag_input):
         if tag_input.tag is True: pass #num_yes += 1
         if tag_input.tag is False: pass #num_no += 1
         image_set(image_name, tag_input.tag)
-        if i >= num - 1:
+        if index.i >= num - 1:
             clear_output()
             print("You're done! :) Bye!")
             return False
-        i += 1
+        index.forward()
     else:
         warning = "Wrong label (" + tag_input.key + "). Please try again."
     return True
