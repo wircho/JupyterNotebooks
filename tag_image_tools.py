@@ -57,10 +57,16 @@ def next_file_path(path):
         return actual_path + " (1)." + extension
     return file_number_match.group(0) + " (" + (int(file_number_match.group(1)) + 1) + ")." + extension
 
+#####################################################
+## TODO: Edit the classification base when needed   #
+base = "D:\\sensus_classification"                  #
+#####################################################
 
-## TODO: Edit the base when needed
-base = "D:\\sensus_classification"
-# base = "/Users/wircho/Desktop/classes"
+################################################################################
+## TODO: Edit sample base                                                      #
+sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\\samples_" #
+################################################################################
+
 YES_ = "YES_"
 NO_ = "NO_"
 
@@ -176,15 +182,17 @@ class Cat:
             if other_yes.has(name): return False
         return None
 
-## TODO: Edit categories here (when needed)     
-all_categories = [
-    Cat("odometer"),
-    Cat("REGO_sticker"),
-    Cat("REGO_plate"),
-    Cat("VIN"),
-    Cat("document"),
-    Cat("mechanical"),
-    Cat("exterior"),
-    Cat("interior"),
-    Cat("part"),
-]
+####################################################
+## TODO: Edit categories here (when needed)        #
+all_categories = [                                 #
+    Cat("odometer"),                               #
+    Cat("REGO_sticker"),                           #
+    Cat("REGO_plate"),                             #
+    Cat("VIN"),                                    #
+    Cat("document"),                               #
+    Cat("mechanical"),                             #
+    Cat("exterior"),                               #
+    Cat("interior"),                               #
+    Cat("part"),                                   #
+]                                                  #
+####################################################

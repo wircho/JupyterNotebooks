@@ -1,6 +1,6 @@
 from IPython.display import Image, display, clear_output, HTML
 import ipywidgets as widgets
-from tag_image_tools import Folder, Cat, all_categories, top, images, all_image_names
+from tag_image_tools import Folder, Cat, all_categories, top, images, all_image_names, sample_base
 from tag_images_social_widget import KeyWidget
 
 counts = sorted([{"name": cat.name, "count": cat.yes.count()} for cat in all_categories], key = lambda x: x["count"])
@@ -20,8 +20,6 @@ while selected_category is None:
 clear_output()
 display(HTML("You have selected <b>" + selected_category.name + "</b>"))
 
-## TODO: Edit sample base
-sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\\samples_"
 display(HTML("Here are some examples of images in this category: <a target='_blank' href='file:" + sample_base + selected_category.name + "'>" + sample_base + selected_category.name + "</a>"))
 # display(HTML("Below are examples of images from all other categories:"))
 # for cat in all_categories:
