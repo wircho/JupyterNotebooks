@@ -58,7 +58,7 @@ def next_file_path(path):
     return file_number_match.group(0) + " (" + (int(file_number_match.group(1)) + 1) + ")." + extension
 
 
-
+## TODO: Edit the base when needed
 base = "D:\\sensus_classification"
 # base = "/Users/wircho/Desktop/classes"
 YES_ = "YES_"
@@ -175,7 +175,8 @@ class Cat:
         for other_yes in other_yeses:
             if other_yes.has(name): return False
         return None
-        
+
+## TODO: Edit categories here (when needed)     
 all_categories = [
     Cat("odometer"),
     Cat("REGO_sticker"),

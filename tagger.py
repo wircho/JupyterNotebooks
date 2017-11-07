@@ -19,6 +19,8 @@ while selected_category is None:
 
 clear_output()
 display(HTML("You have selected <b>" + selected_category.name + "</b>"))
+
+## TODO: Edit sample base
 sample_base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_samples\\samples_"
 display(HTML("Here are some examples of images in this category: <a target='_blank' href='file:" + sample_base + selected_category.name + "'>" + sample_base + selected_category.name + "</a>"))
 # display(HTML("Below are examples of images from all other categories:"))
