@@ -59,7 +59,7 @@ def next_file_path(path):
 
 
 
-base = "\\\\stelvio.net\\mtl\\Public\\Sensus\\sensus_classification"
+base = "D:\\sensus_classification"
 # base = "/Users/wircho/Desktop/classes"
 YES_ = "YES_"
 NO_ = "NO_"
